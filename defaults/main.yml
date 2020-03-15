@@ -1,0 +1,5 @@
+---
+# defaults file for php
+
+php_user: "arsalen"
+php_version: "7.0"

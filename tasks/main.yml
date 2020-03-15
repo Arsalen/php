@@ -1,0 +1,48 @@
+---
+# tasks file for php
+
+- name: Install prerequisites
+  apt:
+    name: "{{item}}"
+    state: latest
+    update_cache: yes
+  loop:
+    - software-properties-common
+    - python-software-properties
+
+- name: Configure user
+  user:
+    name: "{{php_user}}"
+    state: present
+
+- name: Add ppa repository
+  apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+    update_cache: yes
+
+- name: Install PHP
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
+  loop:
+    - php{{php_version}}
+    - php{{php_version}}-cli
+    - php{{php_version}}-common
+    - php{{php_version}}-curl
+    - php{{php_version}}-gd
+    - php{{php_version}}-json
+    - php{{php_version}}-mbstring
+    - php{{php_version}}-intl
+    - php{{php_version}}-mysql
+    - php{{php_version}}-xml
+    - php{{php_version}}-zip
+  notify: Reload apache
+
+- name: Setup phpinfo page
+  template:
+    src: phpinfo.php.j2
+    dest: /var/www/html/phpinfo.php
+    owner: "{{php_user}}"
+  notify: Reload apache
